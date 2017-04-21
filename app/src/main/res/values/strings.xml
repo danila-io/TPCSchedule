@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Расписание ТПК</string>
+    <string name="action_settings">Выбор группы</string>
+    <string name="section_format">Секция: %1$d</string>
+    <string name="red">Красная</string>
+    <string name="green">Зеленая</string>
+    <string name="group">Выбор группы</string>
+    <string name="connection_error">Ошибка соединения</string>
+</resources>
