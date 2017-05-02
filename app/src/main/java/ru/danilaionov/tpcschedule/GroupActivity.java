@@ -1,12 +1,13 @@
 package ru.danilaionov.tpcschedule;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -17,6 +18,8 @@ import retrofit2.Response;
 import ru.danilaionov.tpcschedule.adapters.GroupAdapter;
 import ru.danilaionov.tpcschedule.models.Group;
 import ru.danilaionov.tpcschedule.services.TimetableServiceProvider;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 /**
  * Created by danilaionov on 02/04/2017.
@@ -49,15 +52,24 @@ public class GroupActivity extends AppCompatActivity {
             }
         });
 
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                String item = ((TextView)view).getText().toString();
-//
-//                Toast.makeText(groupActivity, item, Toast.LENGTH_LONG).show();
-//
-//            }
-//        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Object group = parent.getAdapter().getItem(position);
+
+                SharedPreferences chosenGroup = getDefaultSharedPreferences(getApplicationContext());
+
+                SharedPreferences.Editor editor = chosenGroup.edit();
+                editor.putInt("groupId", Integer.parseInt(group.toString()));
+                editor.commit();
+
+                Intent intent;
+                intent = new Intent(groupActivity, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 }

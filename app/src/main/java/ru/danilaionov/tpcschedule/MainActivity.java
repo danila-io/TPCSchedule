@@ -1,6 +1,7 @@
 package ru.danilaionov.tpcschedule;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,8 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
+
+    final MainActivity mainActivity = this;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences selectedGroup = getDefaultSharedPreferences(getApplicationContext());
+        int groupId = selectedGroup.getInt("groupId", 0);
+
+        Intent intent;
+        if (groupId == 0)
+        {
+            intent = new Intent(this, GroupActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -54,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        Toast.makeText(this, Integer.toString(groupId), Toast.LENGTH_LONG).show();
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -159,4 +179,6 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
 }

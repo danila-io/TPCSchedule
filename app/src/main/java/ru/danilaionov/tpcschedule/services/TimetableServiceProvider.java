@@ -18,7 +18,7 @@ public class TimetableServiceProvider {
 
         if (service == null) {
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://www.tpcol.ru:6080/api/")
+                    .baseUrl("http://macbook:6080/api/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             service = retrofit.create(TimetableService.class);

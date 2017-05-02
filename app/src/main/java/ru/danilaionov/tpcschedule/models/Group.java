@@ -35,7 +35,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return this.id + " " + this.name;
+        return Integer.toString(this.id);
     }
 
 }
