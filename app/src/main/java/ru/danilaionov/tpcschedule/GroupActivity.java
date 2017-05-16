@@ -2,6 +2,7 @@ package ru.danilaionov.tpcschedule;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -63,7 +64,7 @@ public class GroupActivity extends AppCompatActivity {
 
                 SharedPreferences.Editor editor = chosenGroup.edit();
                 editor.putInt("groupId", Integer.parseInt(group.toString()));
-                editor.commit();
+                editor.apply();
 
                 Intent intent;
                 intent = new Intent(groupActivity, MainActivity.class);

@@ -18,6 +18,6 @@ public interface TimetableService {
     Call<List<Group>> getGroups();
 
     @GET("group/{id}/schedule")
-    Call<List<Schedule>> getSchedule(@Path("id") int groupId);
+    Call<Schedule> getSchedule(@Path("id") int groupId);
 
 }

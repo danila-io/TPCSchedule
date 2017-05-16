@@ -1,11 +1,13 @@
 package ru.danilaionov.tpcschedule;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -13,6 +15,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,11 +26,31 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import ru.danilaionov.tpcschedule.adapters.DayCardAdapter;
+import ru.danilaionov.tpcschedule.adapters.GroupAdapter;
+import ru.danilaionov.tpcschedule.models.Day;
+import ru.danilaionov.tpcschedule.models.Group;
+import ru.danilaionov.tpcschedule.models.Schedule;
+import ru.danilaionov.tpcschedule.services.TimetableServiceProvider;
+
+import static android.R.id.input;
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
 
     final MainActivity mainActivity = this;
+
+    static int groupId;
+
+    static RecyclerView dayRecyclerView;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -46,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ru.danilaionov.tpcschedule.utils.DateUtils.setContext(mainActivity);
 
         SharedPreferences selectedGroup = getDefaultSharedPreferences(getApplicationContext());
         int groupId = selectedGroup.getInt("groupId", 0);
@@ -73,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        Toast.makeText(this, Integer.toString(groupId), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, Integer.toString(groupId), Toast.LENGTH_LONG).show();
+
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -122,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public PlaceholderFragment() {
+
         }
 
         /**
@@ -140,8 +167,44 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            SharedPreferences selectedGroup = getDefaultSharedPreferences(this.getActivity());
+            int groupId = selectedGroup.getInt("groupId", 0);
+            List<Day> days = new ArrayList<>();
+
+            final FragmentActivity activity = this.getActivity();
+            final RecyclerView dayRecyclerView = (RecyclerView) rootView.findViewById(R.id.day_recycler_view);
+            final DayCardAdapter dayCardAdapter = new DayCardAdapter(activity, days);
+            dayRecyclerView.setAdapter(dayCardAdapter);
+            dayRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
+
+
+            TimetableServiceProvider.getService().getSchedule(groupId).enqueue(new Callback<Schedule>() {
+                @Override
+                public void onResponse(Call<Schedule> call, Response<Schedule> response) {
+                    Schedule schedule = response.body();
+
+                    List<Day> days = schedule.getRed();
+
+                    if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
+                        days = schedule.getGreen();
+                    }
+
+                dayCardAdapter.reloadData(days);
+
+                }
+
+                @Override
+                public void onFailure(Call<Schedule> call, Throwable t) {
+
+                    Toast noConnectionMessage = Toast.makeText(activity, R.string.connection_error, Toast.LENGTH_LONG);
+                    noConnectionMessage.setGravity(Gravity.CENTER, 0, 0);
+                    noConnectionMessage.show();
+                }
+            });
+
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
     }

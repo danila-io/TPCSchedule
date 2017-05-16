@@ -6,4 +6,14 @@
     <string name="green">Зеленая</string>
     <string name="group">Выбор группы</string>
     <string name="connection_error">Ошибка соединения</string>
+
+    <array name="daysOfWeek">
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+        <item>Суббота</item>
+        <item>Воскресенье</item>
+    </array>
 </resources>
