@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             SharedPreferences selectedGroup = getDefaultSharedPreferences(this.getActivity());
             int groupId = selectedGroup.getInt("groupId", 0);
@@ -185,6 +185,12 @@ public class MainActivity extends AppCompatActivity {
                     Schedule schedule = response.body();
 
                     List<Day> days = schedule.getRed();
+
+                    if (days.size() == 0) {
+                        Toast noLessonsFound = Toast.makeText(activity, R.string.no_lessons_error, Toast.LENGTH_LONG);
+                        noLessonsFound.setGravity(Gravity.CENTER, 0, 0);
+                        noLessonsFound.show();
+                    }
 
                     if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
                         days = schedule.getGreen();
